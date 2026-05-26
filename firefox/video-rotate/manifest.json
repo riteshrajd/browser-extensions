@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Rotate Video 90°",
+  "version": "1.0",
+  "description": "Rotates HTML5 videos 90 degrees and forces fullscreen visibility.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_title": "Rotate Video"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  }
+}

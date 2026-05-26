@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Grok Audio Enhancer",
+  "version": "1.1",
+  "description": "Adds skip and custom speed controls to Grok's audio player.",
+  "content_scripts": [
+    {
+      "matches": ["*://grok.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["*://grok.com/*"]
+    }
+  ]
+}

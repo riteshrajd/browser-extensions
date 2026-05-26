@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Video Aspect Ratio Fixer",
+  "version": "1.0",
+  "description": "Squish or stretch videos to your liking.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

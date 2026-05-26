@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Gemini Toggle",
+  "version": "1.0",
+  "action": {},
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["*://gemini.google.com/*"],
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
