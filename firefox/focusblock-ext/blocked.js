@@ -39,10 +39,10 @@
     timerSpan.textContent = formatTime(currentRemaining);
     if (currentRemaining <= 0) {
       timerSpan.style.color = '#a0ffa0';
-      timerSpan.style.background = '#1e3a1e';
+      timerSpan.style.background = '#1e3a1e00';
     } else {
       timerSpan.style.color = '#f0f0f0';
-      timerSpan.style.background = '#1e1e2a';
+      timerSpan.style.background = '#1e1e2a00';
     }
   }
   
