@@ -19,84 +19,65 @@ body {
   padding: 2rem;
 }
 
-/* Glass card */
+/* minimal glass card */
 .blocked-message {
-  width: 380px;
+  width: 360px;
   max-width: 90%;
 
-  background: rgba(255, 255, 255, 0.20);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
 
-  padding: 1.6rem;
+  padding: 1.5rem;
 
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-
-  animation: fadeIn 0.35s ease-out;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-/* simple fade */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* title */
 h1 {
   font-size: 1.6rem;
-  font-weight: 700;
   color: white;
   margin-bottom: 0.4rem;
-  letter-spacing: -0.3px;
 }
 
+/* only text */
 .reason {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.75);
-  margin-bottom: 1.2rem;
+  display: none;
 }
 
-/* URL box */
-.url-container,
+/* url hidden if you want strict minimal */
+.url-container {
+  display: none;
+}
+
+/* timer only */
 .timer-container {
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 
   padding: 0.8rem;
-  margin-bottom: 1rem;
+  border-radius: 12px;
+
+  margin: 1rem 0;
 }
 
-.url-label,
 .timer-label {
   font-size: 0.7rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
   color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
   display: block;
   margin-bottom: 0.3rem;
 }
 
-.blocked-url {
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* timer */
 .timer {
   font-family: monospace;
   font-size: 1.6rem;
-  font-weight: 700;
   color: white;
+  font-weight: 700;
 }
 
 /* button */
@@ -104,8 +85,8 @@ h1 {
   width: 100%;
   padding: 0.8rem;
 
-  border: none;
   border-radius: 12px;
+  border: none;
 
   background: rgba(255, 255, 255, 0.12);
   color: white;
@@ -113,10 +94,9 @@ h1 {
   cursor: pointer;
   font-weight: 600;
 
-  transition: 0.2s ease;
+  transition: 0.2s;
 }
 
 .retry-btn:hover {
   background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
 }
