@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Whitelist Lock</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Whitelist Lock</h1>
+        <div id="statusText" class="status">Loading…</div>
+      </div>
+      <div class="timerCard">
+        <div class="label">Time left</div>
+        <div id="timerText" class="timer">00:00:00</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sectionTitle">Lock duration</div>
+      <div class="row">
+        <select id="durationSelect">
+          <option value="900000">15 minutes</option>
+          <option value="1800000">30 minutes</option>
+          <option value="3600000">1 hour</option>
+          <option value="7200000">2 hours</option>
+          <option value="14400000">4 hours</option>
+          <option value="28800000">8 hours</option>
+          <option value="43200000">12 hours</option>
+          <option value="86400000">24 hours</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div id="customWrap" class="customWrap hidden">
+          <input id="customMinutes" type="number" min="1" step="1" placeholder="Minutes" />
+        </div>
+      </div>
+
+      <button id="startBtn" class="primaryBtn">Start lock</button>
+      <div class="hint">Hotkey: Ctrl+Shift+L</div>
+    </div>
+
+    <div class="card">
+      <div class="sectionHead">
+        <div class="sectionTitle">Mode</div>
+        <div class="tiny">Changes are frozen while locked</div>
+      </div>
+      <select id="modeSelect">
+        <option value="allowlist">Allow list mode</option>
+        <option value="blocklist">Block list mode</option>
+      </select>
+      <div class="hint">
+        Allow list mode: only allow listed sites work. Block list mode: everything works except the block list.
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card listCard">
+        <div class="sectionHead">
+          <div class="sectionTitle">Allow list</div>
+          <div class="tiny">Editable only when unlocked</div>
+        </div>
+        <div class="row">
+          <input id="allowInput" type="text" placeholder="Add domain or URL" />
+          <button id="allowAddBtn">Add</button>
+        </div>
+        <div id="allowList" class="list"></div>
+      </div>
+
+      <div class="card listCard">
+        <div class="sectionHead">
+          <div class="sectionTitle">Block list</div>
+          <div class="tiny">Editable only when unlocked</div>
+        </div>
+        <div class="row">
+          <input id="blockInput" type="text" placeholder="Add domain or URL" />
+          <button id="blockAddBtn">Add</button>
+        </div>
+        <div id="blockList" class="list"></div>
+      </div>
+    </div>
+
+    <div class="footerHint">
+      Put your image at <code>assets/images/blocked.png</code>.
+    </div>
+  </div>
+
+  <div id="moveModal" class="modal hidden">
+    <div class="modalCard">
+      <div id="moveText" class="modalText"></div>
+      <div class="modalActions">
+        <button id="moveCancelBtn" class="secondaryBtn">Cancel</button>
+        <button id="moveConfirmBtn" class="primaryBtn">Move</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

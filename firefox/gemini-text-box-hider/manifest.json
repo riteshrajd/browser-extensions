@@ -7,5 +7,14 @@
   "host_permissions": ["*://gemini.google.com/*"],
   "background": {
     "scripts": ["background.js"]
+  },
+  "commands": {
+    "toggle-action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+I",
+        "mac": "Command+Shift+I"
+      },
+      "description": "Toggle Gemini"
+    }
   }
 }

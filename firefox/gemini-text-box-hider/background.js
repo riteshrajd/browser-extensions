@@ -1,5 +1,15 @@
+chrome.commands.onCommand.addListener((command) => {
+  if (command === 'toggle-action') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => inject(tabs[0]));
+  }
+});
+
 chrome.action.onClicked.addListener((tab) => {
-  if (tab.url.includes("gemini.google.com")) {
+  inject(tab);
+});
+
+function inject(tab) {
+  if (tab && tab.url && tab.url.includes("gemini.google.com")) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
@@ -10,4 +20,4 @@ chrome.action.onClicked.addListener((tab) => {
       }
     });
   }
-});
+}

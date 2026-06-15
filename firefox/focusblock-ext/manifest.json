@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "Whitelist Lock",
+  "version": "1.1.0",
+  "description": "Blocks everything except the selected whitelist/blocklist mode while the lock is active.",
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_title": "Whitelist Lock",
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "start-lock": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Start the lock"
+    }
+  },
+  "web_accessible_resources": [
+    "assets/images/*",
+    "blocked.html",
+    "blocked.css",
+    "blocked.js"
+  ]
+}

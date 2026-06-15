@@ -1,0 +1,215 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 420px;
+  max-width: 100%;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.wrap {
+  padding: 14px;
+}
+
+.top {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+  margin-bottom: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.status {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.timerCard,
+.card,
+.modalCard {
+  background: #111827;
+  border: 1px solid #293244;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+
+.timerCard {
+  padding: 12px;
+}
+
+.card {
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.label,
+.tiny,
+.hint,
+.footerHint {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.timer {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+select,
+input,
+button {
+  border-radius: 12px;
+  border: 1px solid #334155;
+  background: #0b1220;
+  color: #e5e7eb;
+  padding: 10px 12px;
+  font: inherit;
+  outline: none;
+}
+
+select,
+input {
+  width: 100%;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+button:hover {
+  filter: brightness(1.07);
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.primaryBtn {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.secondaryBtn {
+  background: #1f2937;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.customWrap {
+  min-width: 140px;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 170px;
+  overflow: auto;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #0b1220;
+  border: 1px solid #263244;
+  border-radius: 12px;
+}
+
+.item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item button {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.footerHint {
+  margin-top: 2px;
+  padding: 0 2px;
+}
+
+.footerHint code {
+  background: #111827;
+  border: 1px solid #293244;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.modalCard {
+  width: min(360px, 100%);
+  padding: 16px;
+}
+
+.modalText {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
