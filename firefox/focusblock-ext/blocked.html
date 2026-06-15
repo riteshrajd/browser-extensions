@@ -1,26 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Blocked</title>
-  <link rel="stylesheet" href="blocked.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Blocked - Whitelist Lock</title>
+  <link rel="stylesheet" href="blocked.css">
 </head>
 <body>
-  <main class="box">
-    <img id="blockedImage" class="blockedImage" alt="Blocked" />
-    <h1>Blocked</h1>
-    <p>This site is not available in the active mode.</p>
-    <p id="site" class="site"></p>
-
-    <div class="panel">
-      <div class="label">Time left</div>
-      <div id="timer" class="timer">00:00:00</div>
+  <div class="blocked-container">
+    <div class="blocked-message">
+      <h1>Blocked</h1>
+      <p class="reason">This site is not allowed while the lock is active.</p>
+      <div class="url-container">
+        <span class="url-label">Attempted access:</span>
+        <span class="blocked-url" id="blockedUrl">-</span>
+      </div>
+      <div class="timer-container">
+        <span class="timer-label">Lock expires in:</span>
+        <span class="timer" id="timer">--:--:--</span>
+      </div>
+      <button class="retry-btn" id="retryBtn">Check Again</button>
     </div>
-
-    <p class="small">This page stays until the lock expires or the extension is removed.</p>
-  </main>
-
+  </div>
   <script src="blocked.js"></script>
 </body>
 </html>

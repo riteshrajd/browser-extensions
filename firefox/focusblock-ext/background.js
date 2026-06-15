@@ -229,8 +229,11 @@ browser.webRequest.onBeforeRequest.addListener(
       return {};
     }
 
+    // Calculate remaining lock time for the blocked page
+    const remainingMs = Math.max(0, state.lockUntil - Date.now());
+    
     return {
-      redirectUrl: `${BLOCK_PAGE_URL}?u=${encodeURIComponent(details.url)}`
+      redirectUrl: `${BLOCK_PAGE_URL}?u=${encodeURIComponent(details.url)}&remaining=${remainingMs}`
     };
   },
   { urls: ["<all_urls>"] },
