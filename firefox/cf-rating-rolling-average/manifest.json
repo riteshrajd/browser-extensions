@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Codeforces MA Rating",
+  "version": "1.0.0",
+  "description": "Adds a moving average rating graph and delta histogram to Codeforces profiles.",
+  "icons": {
+    "32": "assets/icons/icon32x32.png",
+    "64": "assets/icons/icon64x64.png",
+    "128": "assets/icons/icon128x128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cfmovingavgting@myextension.com",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://codeforces.com/profile/*",
+        "*://*.codeforces.com/profile/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}
