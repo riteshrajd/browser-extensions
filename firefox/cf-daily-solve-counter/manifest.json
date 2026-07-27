@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "CF Daily Problem Tracker",
+  "version": "1.0.0",
+  "description": "Histogram tracking daily solved problems against a baseline.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://codeforces.com/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://codeforces.com/profile/*",
+        "https://*.codeforces.com/profile/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
