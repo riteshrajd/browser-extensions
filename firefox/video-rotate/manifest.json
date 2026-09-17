@@ -11,6 +11,12 @@
     "default_title": "Rotate Video"
   },
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "video-rotate@extensions.local",
+      "strict_min_version": "121.0"
+    }
   }
 }
