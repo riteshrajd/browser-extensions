@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Video Aspect Crop & Color FX",
+  "version": "1.2",
+  "description": "Crop videos to any aspect ratio, stretch/squash, rotate, and apply real-time color filters & cinematic effects (VCR, Handheld, Fisheye, Peephole).",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Video Aspect Crop & Color FX"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "video-fx-crop@extension",
+      "strict_min_version": "109.0"
+    }
+  }
+}
