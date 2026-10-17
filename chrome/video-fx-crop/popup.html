@@ -218,11 +218,6 @@
       gap: 4px;
       margin-top: 6px;
     }
-    .btn-grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-    }
 
     button {
       padding: 6px 8px;
@@ -279,9 +274,9 @@
       border-color: var(--purple);
     }
     .fx-card.active {
-      background: rgba(187, 154, 247, 0.15);
+      background: rgba(187, 154, 247, 0.2);
       border-color: var(--purple);
-      box-shadow: 0 0 10px rgba(187, 154, 247, 0.25);
+      box-shadow: 0 0 10px rgba(187, 154, 247, 0.35);
     }
     .fx-icon { font-size: 16px; }
     .fx-name {
@@ -349,10 +344,11 @@
     <div class="card">
       <div class="card-title">
         <span>Aspect Ratio Crop (No Distortion)</span>
+        <span class="val-badge" id="cropStatusBadge">Native</span>
       </div>
       <div class="control">
         <select id="aspectRatio">
-          <option value="native">Original / Native</option>
+          <option value="native">Original / Native (No Crop)</option>
           <option value="16:9">16:9 (Standard Widescreen)</option>
           <option value="21:9">21:9 (Ultrawide Monitor)</option>
           <option value="2.39:1">2.39:1 (Anamorphic Cinema)</option>
@@ -374,7 +370,7 @@
           <span class="val-badge" id="cropRatioSliderVal">1.78</span>
         </div>
         <input type="range" id="cropRatioSlider" min="0.33" max="3.50" step="0.01" value="1.78">
-        <div class="helper-text">Drag slider to crop video to any arbitrary aspect ratio smoothly.</div>
+        <div class="helper-text">Drag slider to crop to any aspect ratio. Select "Original" above to disable crop.</div>
       </div>
     </div>
 
@@ -466,20 +462,20 @@
           <div class="fx-name">Handheld</div>
           <div class="fx-desc">Camera operator sway</div>
         </div>
-        <div class="fx-card" data-fx="fisheye">
-          <div class="fx-icon">🐟</div>
-          <div class="fx-name">Fish Eye</div>
-          <div class="fx-desc">Spherical barrel warp</div>
-        </div>
         <div class="fx-card" data-fx="doorhole">
           <div class="fx-icon">🚪</div>
           <div class="fx-name">Door Peephole</div>
           <div class="fx-desc">Door viewer aperture</div>
         </div>
+        <div class="fx-card" data-fx="fisheye">
+          <div class="fx-icon">🐟</div>
+          <div class="fx-name">Fish Eye</div>
+          <div class="fx-desc">Spherical lens frame</div>
+        </div>
         <div class="fx-card" data-fx="crt">
           <div class="fx-icon">📺</div>
           <div class="fx-name">CRT Arcade</div>
-          <div class="fx-desc">Retro scanline glow</div>
+          <div class="fx-desc">Retro scanline tube</div>
         </div>
         <div class="fx-card" data-fx="nightvision">
           <div class="fx-icon">🌙</div>
@@ -493,7 +489,7 @@
         </div>
       </div>
       <div class="helper-text" style="margin-top: 10px;">
-        Effects apply directly on top of video playback with zero performance lag and full playback controls preserved.
+        Effects overlay on top of video playback with zero performance lag and full playback controls preserved.
       </div>
     </div>
   </div>
@@ -501,6 +497,10 @@
   <!-- TAB 3: COLOR GRADING & FILTERS -->
   <div class="tab-content" id="tab-color">
     <div class="card">
+      <div class="card-title">
+        <span>Color Grading Controls</span>
+        <button id="resetColorsBtn" style="padding: 2px 6px; font-size: 10px;">Reset Colors</button>
+      </div>
       <div class="control">
         <div class="control-header"><span>Brightness</span><span class="val-badge" id="brightnessVal">100%</span></div>
         <input type="range" id="brightness" min="0" max="250" value="100">

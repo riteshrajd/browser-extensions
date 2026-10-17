@@ -3,8 +3,9 @@ const ext = (typeof browser !== 'undefined' && browser.runtime) ? browser : chro
 
 const DEFAULTS = {
   // Aspect Ratio Crop
-  aspectRatio: 'native',
-  cropRatioSlider: 1.78,
+  cropEnabled: false,
+  cropRatio: 1.78,
+  cropPreset: 'native',
   customW: 16,
   customH: 9,
 
@@ -37,6 +38,7 @@ const DEFAULTS = {
 // UI Elements Map
 const els = {
   aspectRatio: document.getElementById('aspectRatio'),
+  cropStatusBadge: document.getElementById('cropStatusBadge'),
   customArBox: document.getElementById('customArBox'),
   customW: document.getElementById('customW'),
   customH: document.getElementById('customH'),
@@ -68,11 +70,15 @@ const els = {
   blurVal: document.getElementById('blurVal'),
   resetBtn: document.getElementById('resetBtn'),
   quickReset: document.getElementById('quickReset'),
+  resetColorsBtn: document.getElementById('resetColorsBtn'),
   fsBtn: document.getElementById('fsBtn'),
   flipHBtn: document.getElementById('flipHBtn'),
   flipVBtn: document.getElementById('flipVBtn')
 };
 
+let currentCropEnabled = false;
+let currentCropRatio = 1.78;
+let currentCropPreset = 'native';
 let currentFlipH = false;
 let currentFlipV = false;
 let currentActiveFx = 'none';
@@ -101,7 +107,7 @@ document.querySelectorAll('.fx-card').forEach(card => {
 });
 
 function updateLabels(state) {
-  els.cropRatioSliderVal.textContent = parseFloat(state.cropRatioSlider).toFixed(2);
+  els.cropRatioSliderVal.textContent = parseFloat(state.cropRatio).toFixed(2);
   els.stretchXVal.textContent = `${state.stretchX}%`;
   els.stretchYVal.textContent = `${state.stretchY}%`;
   els.rotateVal.textContent = `${state.rotate}°`;
@@ -115,9 +121,18 @@ function updateLabels(state) {
   els.invertVal.textContent = `${state.invert}%`;
   els.blurVal.textContent = `${state.blur}px`;
 
-  els.customArBox.style.display = state.aspectRatio === 'custom' ? 'flex' : 'none';
+  // Crop status badge
+  if (!state.cropEnabled) {
+    els.cropStatusBadge.textContent = 'Native (Off)';
+    els.cropStatusBadge.style.color = '#7982a9';
+  } else {
+    els.cropStatusBadge.textContent = `${parseFloat(state.cropRatio).toFixed(2)} Active`;
+    els.cropStatusBadge.style.color = '#7aa2f7';
+  }
 
-  // Update Stretch preset button highlights
+  els.customArBox.style.display = state.cropPreset === 'custom' ? 'flex' : 'none';
+
+  // Stretch preset buttons
   const stretchPresetButtons = [
     { id: 'btnSquash75', x: 75, y: 100 },
     { id: 'btnStretch100', x: 100, y: 100 },
@@ -135,7 +150,7 @@ function updateLabels(state) {
     }
   });
 
-  // Update Flip button states
+  // Flip buttons
   if (els.flipHBtn) {
     if (state.flipH) els.flipHBtn.classList.add('btn-active');
     else els.flipHBtn.classList.remove('btn-active');
@@ -145,7 +160,7 @@ function updateLabels(state) {
     else els.flipVBtn.classList.remove('btn-active');
   }
 
-  // Update Active FX cards
+  // Active FX cards
   document.querySelectorAll('.fx-card').forEach(card => {
     if (card.getAttribute('data-fx') === state.activeFx) {
       card.classList.add('active');
@@ -157,8 +172,9 @@ function updateLabels(state) {
 
 function getStateFromUI() {
   return {
-    aspectRatio: els.aspectRatio.value,
-    cropRatioSlider: parseFloat(els.cropRatioSlider.value) || 1.78,
+    cropEnabled: currentCropEnabled,
+    cropRatio: parseFloat(currentCropRatio) || 1.78,
+    cropPreset: currentCropPreset,
     customW: parseFloat(els.customW.value) || 16,
     customH: parseFloat(els.customH.value) || 9,
     stretchX: Number(els.stretchX.value),
@@ -180,11 +196,20 @@ function getStateFromUI() {
 }
 
 function applyStateToUI(state) {
+  currentCropEnabled = Boolean(state.cropEnabled);
+  currentCropRatio = parseFloat(state.cropRatio) || 1.78;
+  currentCropPreset = state.cropPreset || 'native';
   currentFlipH = Boolean(state.flipH);
   currentFlipV = Boolean(state.flipV);
   currentActiveFx = state.activeFx || 'none';
 
-  Object.keys(DEFAULTS).forEach(key => {
+  if (els.aspectRatio) els.aspectRatio.value = currentCropPreset;
+  if (els.cropRatioSlider) els.cropRatioSlider.value = currentCropRatio;
+
+  [
+    'customW', 'customH', 'stretchX', 'stretchY', 'rotate', 'zoom',
+    'brightness', 'contrast', 'saturate', 'hue', 'grayscale', 'sepia', 'invert', 'blur'
+  ].forEach(key => {
     if (els[key] && state[key] !== undefined) {
       els[key].value = state[key];
     }
@@ -193,92 +218,129 @@ function applyStateToUI(state) {
   updateLabels(state);
 }
 
-// Cross-browser storage and message dispatch
-async function broadcast(state) {
-  // 1. Save to local storage
-  try {
-    if (ext.storage?.local?.set) {
-      ext.storage.local.set({ vfxState: state });
-    }
-  } catch (e) {}
+// Throttled 60fps message dispatcher & debounced storage writer
+let broadcastRaf = null;
+let pendingState = null;
+let saveStorageTimeout = null;
 
-  // 2. Query active tab
-  let activeTab = null;
-  try {
-    if (typeof browser !== 'undefined' && browser.tabs?.query) {
-      const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-      activeTab = tabs && tabs[0];
-    } else if (typeof chrome !== 'undefined' && chrome.tabs?.query) {
-      activeTab = await new Promise(resolve => {
-        chrome.tabs.query({ active: true, currentWindow: true }, tabs => resolve(tabs && tabs[0]));
-      });
-    }
-  } catch (e) {}
+function broadcast(state) {
+  pendingState = state;
 
-  if (!activeTab?.id) return;
-
-  // 3. Send message to tab (inject content.js if not yet loaded)
-  try {
-    if (typeof browser !== 'undefined' && browser.tabs?.sendMessage) {
-      await browser.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state });
-    } else {
-      await new Promise(resolve => {
-        chrome.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state }, resolve);
-      });
-    }
-  } catch (err) {
-    // Inject content.js if script is not present
+  // Debounce storage writes to avoid disk I/O / quota locks
+  clearTimeout(saveStorageTimeout);
+  saveStorageTimeout = setTimeout(() => {
     try {
-      const scriptingApi = (typeof browser !== 'undefined' && browser.scripting) ? browser.scripting : chrome.scripting;
-      if (scriptingApi?.executeScript) {
-        await scriptingApi.executeScript({
-          target: { tabId: activeTab.id, allFrames: true },
-          files: ['content.js']
-        });
-        if (typeof browser !== 'undefined' && browser.tabs?.sendMessage) {
-          await browser.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state });
-        } else {
-          chrome.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state }, () => {});
-        }
+      if (ext.storage?.local?.set) {
+        ext.storage.local.set({ vfxState: state });
       }
     } catch (e) {}
+  }, 120);
+
+  // Send message at most once per screen refresh frame
+  if (!broadcastRaf) {
+    broadcastRaf = requestAnimationFrame(async () => {
+      broadcastRaf = null;
+      const s = pendingState;
+      if (!s) return;
+
+      let activeTab = null;
+      try {
+        if (typeof browser !== 'undefined' && browser.tabs?.query) {
+          const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+          activeTab = tabs && tabs[0];
+        } else if (typeof chrome !== 'undefined' && chrome.tabs?.query) {
+          activeTab = await new Promise(resolve => {
+            chrome.tabs.query({ active: true, currentWindow: true }, tabs => resolve(tabs && tabs[0]));
+          });
+        }
+      } catch (e) {}
+
+      if (!activeTab?.id) return;
+
+      try {
+        if (typeof browser !== 'undefined' && browser.tabs?.sendMessage) {
+          await browser.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state: s });
+        } else {
+          chrome.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state: s }, () => {});
+        }
+      } catch (err) {
+        try {
+          const scriptingApi = (typeof browser !== 'undefined' && browser.scripting) ? browser.scripting : chrome.scripting;
+          if (scriptingApi?.executeScript) {
+            await scriptingApi.executeScript({
+              target: { tabId: activeTab.id, allFrames: true },
+              files: ['content.js']
+            });
+            if (typeof browser !== 'undefined' && browser.tabs?.sendMessage) {
+              await browser.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state: s });
+            } else {
+              chrome.tabs.sendMessage(activeTab.id, { type: 'APPLY_VFX', state: s }, () => {});
+            }
+          }
+        } catch (e) {}
+      }
+    });
   }
 }
 
-// Aspect Ratio preset dropdown changed
+// Aspect Ratio Preset Dropdown
 els.aspectRatio.addEventListener('change', () => {
   const val = els.aspectRatio.value;
-  if (val === '16:9') els.cropRatioSlider.value = 1.78;
-  else if (val === '21:9') els.cropRatioSlider.value = 2.33;
-  else if (val === '2.39:1') els.cropRatioSlider.value = 2.39;
-  else if (val === '4:3') els.cropRatioSlider.value = 1.33;
-  else if (val === '1:1') els.cropRatioSlider.value = 1.0;
-  else if (val === '9:16') els.cropRatioSlider.value = 0.56;
+  currentCropPreset = val;
+
+  if (val === 'native') {
+    currentCropEnabled = false;
+  } else {
+    currentCropEnabled = true;
+    if (val === '16:9') currentCropRatio = 16 / 9;
+    else if (val === '21:9') currentCropRatio = 21 / 9;
+    else if (val === '2.39:1') currentCropRatio = 2.39;
+    else if (val === '4:3') currentCropRatio = 4 / 3;
+    else if (val === '1:1') currentCropRatio = 1.0;
+    else if (val === '9:16') currentCropRatio = 9 / 16;
+    else if (val === 'custom') {
+      const w = parseFloat(els.customW.value) || 16;
+      const h = parseFloat(els.customH.value) || 9;
+      currentCropRatio = w / h;
+    }
+    els.cropRatioSlider.value = currentCropRatio;
+  }
 
   const state = getStateFromUI();
   updateLabels(state);
   broadcast(state);
 });
 
-// Any-Amount Crop Ratio Slider changed
+// Any-Amount Crop Ratio Slider
 els.cropRatioSlider.addEventListener('input', () => {
-  els.aspectRatio.value = 'slider';
+  currentCropEnabled = true;
+  currentCropRatio = parseFloat(els.cropRatioSlider.value) || 1.78;
+  currentCropPreset = 'custom';
+  els.aspectRatio.value = 'custom';
+
   const state = getStateFromUI();
   updateLabels(state);
   broadcast(state);
 });
 
-// Custom W/H Inputs changed
+// Custom W/H Inputs
 ['customW', 'customH'].forEach(id => {
   document.getElementById(id)?.addEventListener('input', () => {
+    currentCropEnabled = true;
+    currentCropPreset = 'custom';
     els.aspectRatio.value = 'custom';
+    const w = parseFloat(els.customW.value) || 16;
+    const h = parseFloat(els.customH.value) || 9;
+    currentCropRatio = w / h;
+    els.cropRatioSlider.value = currentCropRatio;
+
     const state = getStateFromUI();
     updateLabels(state);
     broadcast(state);
   });
 });
 
-// Generic input listeners for remaining sliders
+// Generic Input Listeners for all Sliders
 [
   'stretchX', 'stretchY', 'rotate', 'zoom',
   'brightness', 'contrast', 'saturate', 'hue', 'grayscale', 'sepia', 'invert', 'blur'
@@ -293,7 +355,7 @@ els.cropRatioSlider.addEventListener('input', () => {
   }
 });
 
-// Stretch / Squash Quick Preset Buttons
+// Stretch Presets
 const stretchPresets = [
   { id: 'btnSquash75', x: 75, y: 100 },
   { id: 'btnStretch100', x: 100, y: 100 },
@@ -358,6 +420,21 @@ function resetAll() {
 }
 els.resetBtn?.addEventListener('click', resetAll);
 els.quickReset?.addEventListener('click', resetAll);
+
+// Reset Colors Only
+els.resetColorsBtn?.addEventListener('click', () => {
+  els.brightness.value = 100;
+  els.contrast.value = 100;
+  els.saturate.value = 100;
+  els.hue.value = 0;
+  els.grayscale.value = 0;
+  els.sepia.value = 0;
+  els.invert.value = 0;
+  els.blur.value = 0;
+  const state = getStateFromUI();
+  updateLabels(state);
+  broadcast(state);
+});
 
 // Fullscreen button
 els.fsBtn?.addEventListener('click', async () => {
