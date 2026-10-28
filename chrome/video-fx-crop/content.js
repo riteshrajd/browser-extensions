@@ -85,30 +85,6 @@ function ensureGlobalStyles() {
       100% { transform: translateY(0); opacity: 0.6; }
     }
 
-    /* Door Hole / Peephole Effect */
-    .vfx-doorhole-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(circle at center,
-        transparent 0%,
-        transparent 27%,
-        rgba(20, 15, 5, 0.5) 28%,
-        rgba(80, 60, 20, 0.9) 29%,
-        rgba(220, 180, 65, 0.98) 29.8%,
-        rgba(150, 115, 30, 0.98) 30.8%,
-        rgba(35, 25, 8, 0.98) 31.8%,
-        #050505 33%,
-        #000000 34%,
-        #000000 100%
-      );
-    }
-    .vfx-doorhole-glass {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, transparent 18%, rgba(0, 0, 0, 0.35) 27%, transparent 28%);
-    }
-
     /* Fish Eye Lens Vignette */
     .vfx-fisheye-layer {
       position: absolute;
@@ -216,12 +192,7 @@ function updateVideoOverlay(video, parent, activeFx) {
       </div>
       <div class="vfx-vcr-tracking"></div>
     `;
-  } else if (activeFx === 'doorhole') {
-    html = `
-      <div class="vfx-doorhole-layer"></div>
-      <div class="vfx-doorhole-glass"></div>
-    `;
-  } else if (activeFx === 'fisheye') {
+  }  else if (activeFx === 'fisheye') {
     html = `<div class="vfx-fisheye-layer"></div>`;
   } else if (activeFx === 'crt') {
     html = `<div class="vfx-crt-layer"></div>`;
@@ -308,8 +279,7 @@ function processVideo(video) {
 
   // 3. Compute Scale, Stretch/Squash, Rotation, Flip, Zoom
   let scaleVal = (zoom || 100) / 100;
-  if (activeFx === 'doorhole') scaleVal *= 1.25;
-  else if (activeFx === 'fisheye') scaleVal *= 1.18;
+  if (activeFx === 'fisheye') scaleVal *= 1.18;
 
   const sX = ((stretchX || 100) / 100) * (flipH ? -1 : 1) * scaleVal;
   const sY = ((stretchY || 100) / 100) * (flipV ? -1 : 1) * scaleVal;
